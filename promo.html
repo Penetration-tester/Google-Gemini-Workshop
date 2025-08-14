@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI Workshop for Students</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Library for parsing Excel files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-gray-200">
+
+    <!-- Authentication Overlay -->
+    <div id="auth-overlay" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-gray-900 bg-opacity-90 backdrop-blur-sm">
+        <div class="w-full max-w-md">
+            <div class="glass-card rounded-2xl shadow-2xl p-8">
+                <div class="flex border-b border-gray-700 mb-6">
+                    <button id="login-tab" class="flex-1 py-2 font-semibold text-lg border-b-2 border-indigo-500 text-white">Login</button>
+                    <button id="register-tab" class="flex-1 py-2 font-semibold text-lg border-b-2 border-transparent text-gray-400">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form">
+                    <div class="space-y-4">
+                        <input type="email" id="login-email" placeholder="Email Address" required class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                        <input type="password" id="login-password" placeholder="Password" required class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                    </div>
+                    <button type="submit" class="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-all">Login</button>
+                    <p id="login-error" class="text-red-400 text-sm text-center mt-4 h-4"></p>
+                </form>
+
+                <!-- Registration Form -->
+                <form id="register-form" class="hidden">
+                    <div class="space-y-4">
+                        <input type="text" id="register-name" placeholder="Full Name" required class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-pink-500 focus:outline-none transition">
+                        <input type="text" id="register-class" placeholder="Class (e.g., 12th)" required class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-pink-500 focus:outline-none transition">
+                        <input type="text" id="register-roll" placeholder="Roll Number" required class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-pink-500 focus:outline-none transition">
+                        <input type="email" id="register-email" placeholder="Email Address" required class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-pink-500 focus:outline-none transition">
+                        <input type="password" id="register-password" placeholder="Password (min. 6 characters)" required class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-pink-500 focus:outline-none transition">
+                    </div>
+                    <button type="submit" class="w-full mt-6 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-4 rounded-lg transition-all">Create Account</button>
+                    <p id="register-error" class="text-red-400 text-sm text-center mt-4 h-4"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Content -->
+    <div id="app-content">
+        <!-- Header & Navigation -->
+        <header class="bg-gray-900/80 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-700/50">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold gradient-text">Gemini Workshop</a>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#about" class="hover:text-indigo-400 transition-colors">About</a>
+                    <a href="#learn" class="hover:text-indigo-400 transition-colors">What You'll Learn</a>
+                    <a href="#schedule" class="hover:text-indigo-400 transition-colors">Schedule</a>
+                    <a href="#try-gemini" class="hover:text-indigo-400 transition-colors">Try Gemini</a>
+                    <button id="logout-button" class="hidden bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-transform transform hover:scale-105">Logout</button>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </nav>
+            <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+                <a href="#about" class="block py-2 hover:text-indigo-400">About</a>
+                <a href="#learn" class="block py-2 hover:text-indigo-400">What You'll Learn</a>
+                <a href="#schedule" class="block py-2 hover:text-indigo-400">Schedule</a>
+                <a href="#try-gemini" class="block py-2 hover:text-indigo-400">Try Gemini</a>
+                <button id="mobile-logout-button" class="hidden w-full mt-2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg text-center">Logout</button>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-6 py-12 md:py-20">
+            <section class="text-center my-16">
+                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">
+                    Welcome to the <span class="gradient-text">Gemini AI</span> Workshop!
+                </h1>
+                <p id="welcome-message" class="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-8">
+                    A hands-on workshop for students to explore the future of artificial intelligence.
+                </p>
+                <a href="#learn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 inline-block">
+                    Get Started
+                </a>
+            </section>
+
+            <!-- Attendance Section -->
+            <section id="attendance-section" class="hidden py-10">
+                <div class="max-w-2xl mx-auto text-center glass-card rounded-xl p-8">
+                    <h2 class="text-3xl font-bold mb-4">Mark Your Attendance</h2>
+                    <p class="text-gray-400 mb-6">Enter the 6-digit code provided by the admin to mark your attendance for today's session.</p>
+                    <form id="attendance-form" class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <input type="text" id="attendance-code" placeholder="Enter 6-Digit Code" maxlength="6" class="w-full sm:w-64 bg-gray-900 border border-gray-600 rounded-lg p-3 text-center tracking-widest text-lg focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
+                        <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg transition-all">Submit</button>
+                    </form>
+                    <p id="attendance-status-message" class="mt-4 h-5"></p>
+                </div>
+            </section>
+
+            <section id="about" class="py-20">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-4">About the Workshop</h2>
+                        <p class="text-gray-400">This isn't a lecture. It's an interactive lab where you'll get your hands dirty, experiment with prompts, and learn how to integrate Gemini's capabilities into your own projects. No prior AI experience is required—just curiosity and a desire to learn!</p>
+                    </div>
+                    <div class="flex justify-center items-center">
+                        <div class="w-64 h-64 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-full flex items-center justify-center animate-pulse">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-32 h-32 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 22.5l-.648-1.938a3.375 3.375 0 00-2.672-2.672L11.25 18l1.938-.648a3.375 3.375 0 002.672-2.672L16.25 13.5l.648 1.938a3.375 3.375 0 002.672 2.672L21.75 18l-1.938.648a3.375 3.375 0 00-2.672 2.672z" /></svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="learn" class="py-20">
+                <h2 class="text-3xl font-bold text-center mb-12">What You'll Learn</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="glass-card p-8 rounded-xl flex flex-col justify-between">
+                        <div><h3 class="text-xl font-bold mb-3 text-indigo-400">Prompt Engineering</h3><p class="text-gray-400">Master the art of crafting effective prompts.</p></div>
+                        <button class="generate-notes-btn mt-4 text-sm text-indigo-400 hover:text-indigo-300 font-semibold" data-topic="Prompt Engineering">✨ Generate Study Notes</button>
+                    </div>
+                    <div class="glass-card p-8 rounded-xl flex flex-col justify-between">
+                        <div><h3 class="text-xl font-bold mb-3 text-pink-400">API Integration Basics</h3><p class="text-gray-400">Learn how to make API calls and integrate Gemini.</p></div>
+                        <button class="generate-notes-btn mt-4 text-sm text-pink-400 hover:text-pink-300 font-semibold" data-topic="API Integration Basics with Gemini">✨ Generate Study Notes</button>
+                    </div>
+                    <div class="glass-card p-8 rounded-xl flex flex-col justify-between">
+                        <div><h3 class="text-xl font-bold mb-3 text-teal-400">Creative Use Cases</h3><p class="text-gray-400">Explore practical applications, from coding to writing.</p></div>
+                        <button class="generate-notes-btn mt-4 text-sm text-teal-400 hover:text-teal-300 font-semibold" data-topic="Creative and Technical Use Cases for Gemini">✨ Generate Study Notes</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="schedule" class="py-20">
+                <h2 class="text-3xl font-bold text-center mb-12">Workshop Schedule</h2>
+                <div class="max-w-2xl mx-auto glass-card rounded-xl p-8">
+                    <div class="space-y-6 border-l-2 border-indigo-500/50 ml-2">
+                        <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">10:00 AM - Welcome & Intro to LLMs</p></div>
+                        <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">11:00 AM - The Art of the Prompt</p></div>
+                        <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">12:30 PM - Lunch Break</p></div>
+                        <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">1:30 PM - Coding with Gemini</p></div>
+                        <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">3:00 PM - Project Showcase & Q&A</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="try-gemini" class="py-20">
+                <h2 class="text-3xl font-bold text-center mb-4">Give Gemini a Try!</h2>
+                <div class="max-w-3xl mx-auto glass-card rounded-xl p-8">
+                    <form id="gemini-form">
+                        <label for="prompt-input" class="font-semibold mb-2 block">Your Prompt:</label>
+                        <textarea id="prompt-input" rows="4" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition" placeholder="e.g., Explain quantum computing in simple terms"></textarea>
+                        <div class="mt-4 flex flex-col sm:flex-row gap-4">
+                            <button type="submit" id="generate-button" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center"><span id="button-text">Generate Response</span></button>
+                            <button type="button" id="suggest-project-btn" class="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg transition-all flex items-center justify-center">✨ Suggest a Project</button>
+                        </div>
+                    </form>
+                    <div id="gemini-response-container" class="mt-6">
+                        <h3 class="font-semibold mb-2">Gemini's Response:</h3>
+                        <div id="response-loader" class="hidden justify-center items-center py-8"><div class="loader"></div></div>
+                        <div id="gemini-output" class="bg-gray-900/80 border border-gray-700 rounded-lg p-4 min-h-[100px] text-gray-300 whitespace-pre-wrap">Your generated response will appear here...</div>
+                        <div id="error-message" class="hidden mt-4 text-center text-red-400 bg-red-900/50 border border-red-500/50 p-3 rounded-lg"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-gray-900/50 border-t border-gray-700/50"><div class="container mx-auto px-6 py-8 text-center text-gray-500"><p>&copy; 2025 Prabh Dhiman. All Rights Reserved.</p></div></footer>
+    </div>
+
+    <!-- Admin Panel (Initially Hidden) -->
+    <div id="admin-panel" class="hidden">
+        <header class="bg-gray-900/80 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-700/50">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold gradient-text">Admin Panel</h1>
+                <button id="admin-logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-transform transform hover:scale-105">Logout</button>
+            </nav>
+        </header>
+        <main class="container mx-auto px-6 py-12">
+            <h2 class="text-3xl font-bold mb-8">Student Dashboard</h2>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div class="p-6 glass-card rounded-xl">
+                    <h3 class="text-xl font-semibold">Total Registered Students</h3>
+                    <p id="student-count" class="text-4xl font-bold gradient-text">0</p>
+                </div>
+                <!-- Attendance Management -->
+                <div class="p-6 glass-card rounded-xl">
+                    <h3 class="text-xl font-semibold mb-4">Attendance Management</h3>
+                    <button id="start-attendance-btn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition-all">Start New Attendance Session</button>
+                    <div id="qr-code-area" class="mt-4 text-center hidden">
+                        <p class="text-gray-400 mb-2">Scan or enter the code below:</p>
+                        <div class="flex justify-center">
+                            <img id="qr-code-img" src="" alt="QR Code" class="rounded-lg bg-white p-2">
+                        </div>
+                        <p class="text-2xl font-bold tracking-widest mt-2" id="qr-code-text"></p>
+                    </div>
+                </div>
+                <!-- Bulk User Registration -->
+                <div class="p-6 glass-card rounded-xl">
+                    <h3 class="text-xl font-semibold mb-4">Bulk Register from Excel</h3>
+                    <form id="excel-upload-form">
+                        <label for="excel-file" class="block mb-2 text-sm font-medium text-gray-400">Upload .xlsx or .xls file</label>
+                        <input type="file" id="excel-file" accept=".xlsx, .xls" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-500 file:text-white hover:file:bg-indigo-600">
+                        <button type="submit" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all">Upload and Register</button>
+                    </form>
+                     <p id="excel-upload-status" class="text-sm text-center mt-3 h-auto"></p>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-xl font-semibold mb-4">Student Details</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="p-3">S.No.</th>
+                                <th class="p-3">Name</th>
+                                <th class="p-3">Class</th>
+                                <th class="p-3">Roll No.</th>
+                                <th class="p-3">Email</th>
+                                <th class="p-3">Password</th>
+                                <th class="p-3">Attendance</th>
+                                <th class="p-3">Logins</th>
+                                <th class="p-3">Last Login</th>
+                                <th class="p-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-details-body">
+                            <!-- Student data will be injected here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Study Notes Modal -->
+    <div id="notes-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto glass-card">
+            <div class="p-6 md:p-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modal-title" class="text-2xl font-bold gradient-text">Study Notes</h3>
+                    <button id="close-modal-btn" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+                </div>
+                <div id="modal-loader" class="flex justify-center items-center py-16"><div class="loader"></div></div>
+                <div id="modal-content" class="text-gray-300 whitespace-pre-wrap"></div>
+                <div id="modal-error" class="hidden mt-4 text-center text-red-400 bg-red-900/50 border border-red-500/50 p-3 rounded-lg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Prompt Notification -->
+    <div id="login-prompt" class="fixed bottom-5 right-5 z-40 hidden">
+        <div class="glass-card rounded-lg p-4 flex items-center gap-4 shadow-lg">
+            <p class="text-gray-300">Enjoying the workshop? Login to participate.</p>
+            <button id="show-login-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg">Login/Register</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
