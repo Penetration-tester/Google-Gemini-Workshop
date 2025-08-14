@@ -15,7 +15,7 @@
 </head>
 <body class="text-gray-200">
 
-    <!-- Authentication Overlay -->
+   <!-- Authentication Overlay -->
     <div id="auth-overlay" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-gray-900 bg-opacity-90 backdrop-blur-sm">
         <div class="w-full max-w-md">
             <div class="glass-card rounded-2xl shadow-2xl p-8">
@@ -168,7 +168,7 @@
             </section>
         </main>
 
-        <footer class="bg-gray-900/50 border-t border-gray-700/50"><div class="container mx-auto px-6 py-8 text-center text-gray-500"><p>&copy; 2025 Prabh Dhiman. All Rights Reserved.</p></div></footer>
+        <footer class="bg-gray-900/50 border-t border-gray-700/50"><div class="container mx-auto px-6 py-8 text-center text-gray-500"><p>&copy; 2025 Gemini AI Workshop. All Rights Reserved.</p></div></footer>
     </div>
 
     <!-- Admin Panel (Initially Hidden) -->
@@ -197,6 +197,7 @@
                             <img id="qr-code-img" src="" alt="QR Code" class="rounded-lg bg-white p-2">
                         </div>
                         <p class="text-2xl font-bold tracking-widest mt-2" id="qr-code-text"></p>
+                        <p id="attendance-timer" class="text-yellow-400 mt-2"></p>
                     </div>
                 </div>
                 <!-- Bulk User Registration -->
@@ -211,8 +212,25 @@
                 </div>
             </div>
 
-            <div class="glass-card rounded-xl p-6">
-                <h3 class="text-xl font-semibold mb-4">Student Details</h3>
+            <div class="glass-card rounded-xl p-6 mb-8">
+                <h3 class="text-xl font-semibold mb-4">Manually Add Student</h3>
+                <form id="admin-add-user-form" class="grid md:grid-cols-2 gap-4">
+                    <input type="text" id="admin-add-name" placeholder="Full Name" required class="bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                    <input type="text" id="admin-add-class" placeholder="Class" required class="bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                    <input type="text" id="admin-add-roll" placeholder="Roll Number" required class="bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                    <input type="email" id="admin-add-email" placeholder="Email Address" required class="bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                    <div class="md:col-span-2">
+                        <input type="password" id="admin-add-password" placeholder="Password" required class="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-all">Add Student</button>
+                    </div>
+                </form>
+                <p id="admin-add-user-status" class="text-sm text-center mt-3 h-4"></p>
+            </div>
+
+            <div class="glass-card rounded-xl p-6 mb-8">
+                <h3 class="text-xl font-semibold mb-4">All Student Details</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
@@ -231,6 +249,25 @@
                         </thead>
                         <tbody id="student-details-body">
                             <!-- Student data will be injected here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-xl font-semibold mb-4">Recently Registered Students</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="p-3">S.No.</th>
+                                <th class="p-3">Name</th>
+                                <th class="p-3">Email</th>
+                                <th class="p-3">Password</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-student-details-body">
+                            <!-- Recently registered student data will be injected here by JS -->
                         </tbody>
                     </table>
                 </div>
@@ -264,4 +301,5 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
