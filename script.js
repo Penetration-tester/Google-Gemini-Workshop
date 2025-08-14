@@ -535,7 +535,7 @@
             }
 
             const apiKey = ""; // Leave empty, Canvas will handle it.
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${"AIzaSyBWudgf3QBZl1MY7fAjE7esL81MXk95pLI"}`;
             const payload = { contents: [{ role: "user", parts: [{ text: finalPrompt }] }] };
             let retries = 3, delay = 1000;
             for (let i = 0; i < retries; i++) {
@@ -673,3 +673,4 @@
         };
 
         window.onload = initializeApp;
+
