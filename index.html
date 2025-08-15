@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
      <link rel="shortcut icon" href="icons8-gemini-ai-48.png" type="image/svg+xml">
-    <!-- Library for parsing Excel files -->
+    <!-- Library for parsing Excel files, required for admin panel features -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -76,7 +76,8 @@
             </div>
         </header>
 
-        <main class="container mx-auto px-6 py-12 md:py-20">
+        <!-- FIX: Added min-h-screen class to ensure page is always scrollable -->
+        <main class="container mx-auto px-6 py-12 md:py-20 min-h-screen">
             <section class="text-center my-16">
                 <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">
                     Welcome to the <span class="gradient-text">Gemini AI</span> Workshop!
@@ -141,7 +142,7 @@
                         <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">10:00 AM - Welcome & Intro to LLMs</p></div>
                         <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">11:00 AM - The Art of the Prompt</p></div>
                         <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">12:30 PM - Lunch Break</p></div>
-                        <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">1:30 PM - Coding with Gemini</p></div>
+                        <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">1.30 PM - Coding with Gemini</p></div>
                         <div class="relative pl-8"><div class="absolute -left-2.5 top-1 w-5 h-5 bg-indigo-500 rounded-full border-4 border-gray-800"></div><p class="font-semibold text-indigo-300">3:00 PM - Project Showcase & Q&A</p></div>
                     </div>
                 </div>
@@ -191,6 +192,9 @@
                 <div class="p-6 glass-card rounded-xl">
                     <h3 class="text-xl font-semibold mb-4">Attendance Management</h3>
                     <button id="start-attendance-btn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition-all">Start New Attendance Session</button>
+                    <button id="export-excel-btn" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-all">
+                        Export Attendance to Excel
+                    </button>
                     <div id="qr-code-area" class="mt-4 text-center hidden">
                         <p class="text-gray-400 mb-2">Scan or enter the code below:</p>
                         <div class="flex justify-center">
@@ -240,16 +244,13 @@
                                 <th class="p-3">Class</th>
                                 <th class="p-3">Roll No.</th>
                                 <th class="p-3">Email</th>
-                                <th class="p-3">Password</th>
                                 <th class="p-3">Attendance</th>
                                 <th class="p-3">Logins</th>
                                 <th class="p-3">Last Login</th>
                                 <th class="p-3">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="student-details-body">
-                            <!-- Student data will be injected here by JS -->
-                        </tbody>
+                        <tbody id="student-details-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -263,12 +264,9 @@
                                 <th class="p-3">S.No.</th>
                                 <th class="p-3">Name</th>
                                 <th class="p-3">Email</th>
-                                <th class="p-3">Password</th>
                             </tr>
                         </thead>
-                        <tbody id="recent-student-details-body">
-                            <!-- Recently registered student data will be injected here by JS -->
-                        </tbody>
+                        <tbody id="recent-student-details-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -301,12 +299,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
