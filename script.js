@@ -715,15 +715,14 @@
 
         galleryUploadForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const alt = document.getElementById('gallery-image-alt').value;
             const headline = document.getElementById('gallery-image-headline').value;
             const file = galleryImageUpload.files[0];
 
-            if (file && alt && headline) {
+            if (file && headline) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     const src = event.target.result;
-                    galleryImages.push({ src, alt, headline });
+                    galleryImages.push({ src, alt: headline, headline });
                     saveGalleryToLocalStorage();
                     renderGallery();
                     renderAdminGallery();
