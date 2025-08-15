@@ -155,7 +155,7 @@ async function showAdminPanel() {
     appContent.classList.add('hidden');
     authOverlay.classList.add('hidden');
     try {
-        const response = await fetchWithAuth(`${API_URL}/users`);
+        const response = await fetchWithAuth(`${"AIzaSyBWudgf3QBZl1MY7fAjE7esL81MXk95pLI"}/users`);
         if (!response.ok) throw new Error('Failed to fetch user data. You may not be an authorized admin.');
         const users = await response.json();
         renderAdminDashboard(users);
@@ -389,5 +389,6 @@ const initializeApp = () => {
         showAuthScreen();
     });
 };
+
 
 window.onload = initializeApp;
