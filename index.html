@@ -15,7 +15,7 @@
 </head>
 <body class="text-gray-200">
 
-   <!-- Authentication Overlay -->
+  <!-- Authentication Overlay -->
     <div id="auth-overlay" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-gray-900 bg-opacity-90 backdrop-blur-sm">
         <div class="w-full max-w-md">
             <div class="glass-card rounded-2xl shadow-2xl p-8">
@@ -106,7 +106,7 @@
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                     <div>
                         <h2 class="text-3xl font-bold mb-4">About the Workshop</h2>
-                        <p class="text-gray-400">A Google Gemini workshop is a hands-on training session where you learn how to use Google's powerful AI, Gemini, to build applications, create content, and solve problems.</p>
+                        <p class="text-gray-400">This isn't a lecture. It's an interactive lab where you'll get your hands dirty, experiment with prompts, and learn how to integrate Gemini's capabilities into your own projects. No prior AI experience is required—just curiosity and a desire to learn!</p>
                     </div>
                     <div class="flex justify-center items-center">
                         <div class="w-64 h-64 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-full flex items-center justify-center animate-pulse">
@@ -166,9 +166,16 @@
                     </div>
                 </div>
             </section>
+
+            <section id="gallery" class="py-20">
+                <h2 class="text-3xl font-bold text-center mb-12">Workshop Moments</h2>
+                <div id="gallery-container" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Gallery images will be injected here by JS -->
+                </div>
+            </section>
         </main>
 
-        <footer class="bg-gray-900/50 border-t border-gray-700/50"><div class="container mx-auto px-6 py-8 text-center text-gray-500"><p>&copy; 2025 Prabh Dhiman. All Rights Reserved.</p></div></footer>
+        <footer class="bg-gray-900/50 border-t border-gray-700/50"><div class="container mx-auto px-6 py-8 text-center text-gray-500"><p>&copy; 2025 Gemini AI Workshop. All Rights Reserved.</p></div></footer>
     </div>
 
     <!-- Admin Panel (Initially Hidden) -->
@@ -230,7 +237,10 @@
             </div>
 
             <div class="glass-card rounded-xl p-6 mb-8">
-                <h3 class="text-xl font-semibold mb-4">All Student Details</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">All Student Details</h3>
+                    <input type="text" id="search-input" placeholder="Search students..." class="bg-gray-800 border border-gray-600 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
@@ -272,6 +282,20 @@
                     </table>
                 </div>
             </div>
+
+            <div class="glass-card rounded-xl p-6 mt-8">
+                <h3 class="text-xl font-semibold mb-4">Gallery Management</h3>
+                <form id="gallery-upload-form" class="grid md:grid-cols-2 gap-4">
+                    <input type="file" id="gallery-image-upload" accept=".png, .jpg, .jpeg" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-500 file:text-white hover:file:bg-indigo-600">
+                    <input type="text" id="gallery-image-headline" placeholder="Image Headline" required class="bg-gray-900 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                    <div class="md:col-span-2">
+                         <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-all">Add Image</button>
+                    </div>
+                </form>
+                <div id="admin-gallery-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    <!-- Admin gallery images will be injected here by JS -->
+                </div>
+            </div>
         </main>
     </div>
 
@@ -290,6 +314,17 @@
         </div>
     </div>
 
+    <!-- Gallery Viewer Modal -->
+    <div id="gallery-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto glass-card relative">
+            <button id="close-gallery-modal-btn" class="absolute top-4 right-4 text-white text-3xl leading-none">&times;</button>
+            <div class="p-4">
+                <img id="gallery-modal-image" src="" alt="" class="rounded-lg w-full h-auto max-h-[70vh] object-contain">
+                <p id="gallery-modal-description" class="text-center text-gray-300 mt-4"></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Prompt Notification -->
     <div id="login-prompt" class="fixed bottom-5 right-5 z-40 hidden">
         <div class="glass-card rounded-lg p-4 flex items-center gap-4 shadow-lg">
@@ -301,6 +336,7 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
