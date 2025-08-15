@@ -1,4 +1,4 @@
-body {
+ body {
             font-family: 'Inter', sans-serif;
             background-color: #111827; /* bg-gray-900 */
         }
@@ -48,4 +48,19 @@ body {
             padding: 2px 8px;
             border-radius: 9999px;
             font-weight: 500;
+        }
+        .gallery-item {
+            overflow: hidden;
+        }
+        .gallery-item img {
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        .gallery-item .headline {
+            transition: opacity 0.3s ease;
+        }
+        .gallery-item:hover .headline {
+            opacity: 1;
         }
