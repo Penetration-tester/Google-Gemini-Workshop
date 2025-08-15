@@ -1,4 +1,4 @@
-  // --- DOM Element References ---
+ // --- DOM Element References ---
         const authOverlay = document.getElementById('auth-overlay');
         const loginTab = document.getElementById('login-tab');
         const registerTab = document.getElementById('register-tab');
@@ -19,6 +19,7 @@
         const recentStudentDetailsBody = document.getElementById('recent-student-details-body');
         const adminAddUserForm = document.getElementById('admin-add-user-form');
         const adminAddUserStatus = document.getElementById('admin-add-user-status');
+        const searchInput = document.getElementById('search-input');
 
         // Admin Attendance Elements
         const startAttendanceBtn = document.getElementById('start-attendance-btn');
@@ -42,9 +43,20 @@
         const loginPrompt = document.getElementById('login-prompt');
         const showLoginBtn = document.getElementById('show-login-btn');
 
+        // Gallery Elements
+        const galleryContainer = document.getElementById('gallery-container');
+        const adminGalleryContainer = document.getElementById('admin-gallery-container');
+        const galleryUploadForm = document.getElementById('gallery-upload-form');
+        const galleryImageUpload = document.getElementById('gallery-image-upload');
+        const galleryModal = document.getElementById('gallery-modal');
+        const closeGalleryModalBtn = document.getElementById('close-gallery-modal-btn');
+        const galleryModalImage = document.getElementById('gallery-modal-image');
+        const galleryModalDescription = document.getElementById('gallery-modal-description');
+
         // --- In-memory Data Store & State ---
         let registeredUsers = [];
         let recentlyRegisteredUsers = [];
+        let galleryImages = [];
         let currentUser = null; // To track the logged-in user
         let attendanceSession = { key: null, expiry: null };
         let attendanceTimerInterval = null;
@@ -77,6 +89,20 @@
             if (session) {
                 attendanceSession = JSON.parse(session);
             }
+        };
+
+        const saveGalleryToLocalStorage = () => {
+            localStorage.setItem('geminiWorkshopGallery', JSON.stringify(galleryImages));
+        };
+
+        const loadGalleryFromLocalStorage = () => {
+            const images = localStorage.getItem('geminiWorkshopGallery');
+            galleryImages = images ? JSON.parse(images) : [
+                { src: "https://placehold.co/600x400/111827/FFFFFF?text=Student+Presentation", alt: "Student presenting", headline: "Student Presentation" },
+                { src: "https://placehold.co/600x400/111827/FFFFFF?text=Collaborative+Coding", alt: "Students coding together", headline: "Collaborative Coding" },
+                { src: "https://placehold.co/600x400/111827/FFFFFF?text=Group+Discussion", alt: "Students in a group discussion", headline: "Group Discussion" },
+                { src: "https://placehold.co/600x400/111827/FFFFFF?text=Final+Projects", alt: "Final project showcase", headline: "Final Projects" }
+            ];
         };
 
         // --- Pre-populate data from CSV ---
@@ -115,6 +141,7 @@
 
         function loadInitialData() {
             loadUsersFromLocalStorage();
+            loadGalleryFromLocalStorage();
             if (registeredUsers.length === 0) {
                 registeredUsers = preloadedStudentData.map(student => ({
                     name: student.Name,
@@ -178,7 +205,15 @@
         const renderAdminDashboard = () => {
             studentCountEl.textContent = registeredUsers.length;
             studentDetailsBody.innerHTML = '';
-            registeredUsers.forEach((user, index) => {
+            
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredUsers = registeredUsers.filter(user => 
+                user.name.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm) ||
+                user.roll.toString().toLowerCase().includes(searchTerm)
+            );
+
+            filteredUsers.forEach((user, index) => {
                 const row = document.createElement('tr');
                 row.className = 'border-b border-gray-800 hover:bg-gray-800/50';
                 const attendanceStatusClass = user.attendance === 'Present' ? 'status-present' : 'status-absent';
@@ -207,6 +242,7 @@
                 studentDetailsBody.appendChild(row);
             });
             renderRecentlyRegisteredTable();
+            renderAdminGallery();
         };
 
         const showAdminPanel = () => {
@@ -535,7 +571,7 @@
             }
 
             const apiKey = ""; // Leave empty, Canvas will handle it.
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${"AIzaSyBWudgf3QBZl1MY7fAjE7esL81MXk95pLI"}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             const payload = { contents: [{ role: "user", parts: [{ text: finalPrompt }] }] };
             let retries = 3, delay = 1000;
             for (let i = 0; i < retries; i++) {
@@ -647,10 +683,99 @@
             });
         });
 
+        // --- Gallery Logic ---
+        const renderGallery = () => {
+            galleryContainer.innerHTML = '';
+            galleryImages.forEach((image, index) => {
+                const div = document.createElement('div');
+                div.className = 'group relative gallery-item rounded-lg cursor-pointer';
+                div.dataset.index = index;
+                div.innerHTML = `
+                    <img src="${image.src}" alt="${image.alt}" class="rounded-lg w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <h3 class="text-white text-lg font-bold text-center p-4">${image.headline}</h3>
+                    </div>
+                `;
+                galleryContainer.appendChild(div);
+            });
+        };
+
+        const renderAdminGallery = () => {
+            adminGalleryContainer.innerHTML = '';
+            galleryImages.forEach((image, index) => {
+                const div = document.createElement('div');
+                div.className = 'relative';
+                div.innerHTML = `
+                    <img src="${image.src}" alt="${image.alt}" class="rounded-lg w-full h-full object-cover">
+                    <button data-index="${index}" class="delete-image-btn absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 text-xs">&times;</button>
+                `;
+                adminGalleryContainer.appendChild(div);
+            });
+        };
+
+        galleryUploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const alt = document.getElementById('gallery-image-alt').value;
+            const headline = document.getElementById('gallery-image-headline').value;
+            const file = galleryImageUpload.files[0];
+
+            if (file && alt && headline) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const src = event.target.result;
+                    galleryImages.push({ src, alt, headline });
+                    saveGalleryToLocalStorage();
+                    renderGallery();
+                    renderAdminGallery();
+                    galleryUploadForm.reset();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        adminGalleryContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-image-btn')) {
+                const index = e.target.dataset.index;
+                galleryImages.splice(index, 1);
+                saveGalleryToLocalStorage();
+                renderGallery();
+                renderAdminGallery();
+            }
+        });
+
+        galleryContainer.addEventListener('click', (e) => {
+            const item = e.target.closest('.gallery-item');
+            if (item) {
+                const index = item.dataset.index;
+                const image = galleryImages[index];
+                
+                galleryModalImage.src = image.src;
+                galleryModalImage.alt = image.alt;
+                galleryModalDescription.textContent = image.headline;
+                
+                galleryModal.classList.remove('hidden');
+                galleryModal.classList.add('flex');
+                document.body.classList.add('overflow-hidden');
+            }
+        });
+
+        closeGalleryModalBtn.addEventListener('click', () => {
+            galleryModal.classList.add('hidden');
+            galleryModal.classList.remove('flex');
+            document.body.classList.remove('overflow-hidden');
+        });
+
+        galleryModal.addEventListener('click', (e) => {
+            if (e.target === galleryModal) {
+                closeGalleryModalBtn.click();
+            }
+        });
+
         // --- Initialize App ---
         const initializeApp = () => {
             loadInitialData();
             loadSessionFromLocalStorage();
+            renderGallery();
             
             if (attendanceSession.key && new Date().getTime() < attendanceSession.expiry) {
                 if (attendanceTimerInterval) clearInterval(attendanceTimerInterval);
@@ -670,7 +795,8 @@
                 loginPrompt.classList.add('hidden');
                 showAuthScreen();
             });
+
+            searchInput.addEventListener('input', renderAdminDashboard);
         };
 
         window.onload = initializeApp;
-
