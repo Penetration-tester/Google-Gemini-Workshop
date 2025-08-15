@@ -312,7 +312,7 @@ mobileMenuButton.addEventListener('click', () => {
 
 startAttendanceBtn.addEventListener('click', async () => {
     try {
-        const response = await fetchWithAuth(`${API_URL}/attendance/start`, { method: 'POST' });
+        const response = await fetchWithAuth(`${"AIzaSyBWudgf3QBZl1MY7fAjE7esL81MXk95pLI"}/attendance/start`, { method: 'POST' });
         if (!response.ok) throw new Error('Could not start session. Are you an admin?');
         const session = await response.json();
         qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${session.code}`;
@@ -392,3 +392,4 @@ const initializeApp = () => {
 
 
 window.onload = initializeApp;
+
